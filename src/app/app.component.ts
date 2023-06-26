@@ -23,8 +23,10 @@ export class AppComponent implements AfterViewInit {
     animationId: number | null = null;
     cameraRotationX = 0;
     cameraRotationY = 0;
+    cameraRadius = 325; // Расстояние от камеры до корабля
 
-    constructor() {
+
+  constructor() {
     }
 
     ngAfterViewInit() {
@@ -48,7 +50,7 @@ export class AppComponent implements AfterViewInit {
         if (shipObject) {
             this.camera.lookAt(shipObject.position);
 
-            const cameraOffset = new THREE.Vector3(0, 5, 300);
+            const cameraOffset = new THREE.Vector3(10, 5, this.cameraRadius);
             this.camera.position.copy(shipObject.position).add(cameraOffset);
         }
         const loader = new GLTFLoader();
@@ -60,7 +62,7 @@ export class AppComponent implements AfterViewInit {
             this.scene.traverse((object: THREE.Object3D) => {
                 if (object.name === "Boot_Finaal_1") { // Замените "Boot_Finaal_1" на имя вашего корабля
                     this.ship = object;
-                    const cameraOffset = new THREE.Vector3(0, 5, 300);
+                    const cameraOffset = new THREE.Vector3(10, 5, this.cameraRadius);
                     this.camera.position.copy(object.position).add(cameraOffset);
                 }
             });
@@ -111,18 +113,18 @@ export class AppComponent implements AfterViewInit {
     animate() {
         if (this.ship) {
             const shipPosition = this.ship.position;
-            const cameraRadius = 300; // Расстояние от камеры до корабля
+            // const cameraRadius = 300; // Расстояние от камеры до корабля
             const cameraRotationSpeed = 0.3; // Скорость вращения камеры
-            const cameraOffset = new THREE.Vector3(0, 5, cameraRadius); // Смещение камеры относительно корабля
+            const cameraOffset = new THREE.Vector3(10, 5, this.cameraRadius); // Смещение камеры относительно корабля
             const cameraPhi = this.cameraRotationY * cameraRotationSpeed;
-            const targetX = shipPosition.x + cameraRadius * Math.sin(cameraRotationSpeed + this.cameraRotationX * cameraRotationSpeed);
-            const targetZ = shipPosition.z + cameraRadius * Math.cos(cameraRotationSpeed + this.cameraRotationX * cameraRotationSpeed);
+            const targetX = shipPosition.x + this.cameraRadius * Math.sin(cameraRotationSpeed + this.cameraRotationX * cameraRotationSpeed);
+            const targetZ = shipPosition.z + this.cameraRadius * Math.cos(cameraRotationSpeed + this.cameraRotationX * cameraRotationSpeed);
 
             // const targetY = shipPosition.y + cameraOffset.y + this.mouseY;
             const targetY = THREE.MathUtils.clamp(
-                shipPosition.y + cameraRadius * Math.sin(cameraPhi) + cameraOffset.y,
-                shipPosition.y - Math.sin(THREE.MathUtils.degToRad(5)) * cameraRadius, // Ограничение вниз
-                shipPosition.y + Math.sin(THREE.MathUtils.degToRad(13)) * cameraRadius  // Ограничение вверх
+                shipPosition.y + this.cameraRadius * Math.sin(cameraPhi) + cameraOffset.y,
+                shipPosition.y - Math.sin(THREE.MathUtils.degToRad(5)) * this.cameraRadius, // Ограничение вниз
+                shipPosition.y + Math.sin(THREE.MathUtils.degToRad(13)) * this.cameraRadius  // Ограничение вверх
             );
             const rotationSpeed = 0.5; // Скорость вращения камеры
             const smoothness = 0.03; // Сглаживание движения камеры
